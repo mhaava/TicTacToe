@@ -1,10 +1,14 @@
 package com.contsort.mihkel.tictactoe;
 
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -19,6 +23,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     protected TextView textViewP1;
     protected TextView textViewP2;
+
+    protected boolean onclick = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +57,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
+
+
     @Override
     public void onClick(View v) {
+        if (!onclick) {
+            return;
+        }
         if (!((Button) v).getText().toString().equals("")) {
             return;
         }
@@ -64,16 +75,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             player1Turn=true;
         }
         if (checkForWin()) {
+            onclick = false;
             if (player1Turn) {
                 p1Points++;
             } else {
                 p2Points++;
             }
-            for (int y = 0; y < 3; y++) {
-                for (int x = 0; x < 3; x++) {
-                    buttons[y][x].setText("");
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    for (int y = 0; y < 3; y++) {
+                        for (int x = 0; x < 3; x++) {
+                            buttons[y][x].setText("");
+                        }
+                    }
+                    onclick = true;
+
                 }
-            }
+            }, 2000);
+
         }
         roundCount++;
         textViewP1.setText("P1: "+p1Points);
